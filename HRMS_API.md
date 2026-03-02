@@ -14,7 +14,8 @@ This document provides a comprehensive list of all API endpoints in the Human Re
 9. [Company Management](#company-management)
 10. [Company Holidays](#company-holidays)
 11. [Offer Letter](#offer-letter)
-12. [Error Handling](#error-handling)
+12. [Letter Templates](#letter-templates)
+13. [Error Handling](#error-handling)
 
 ---
 
@@ -925,6 +926,57 @@ This section provides APIs for retrieving data and generating offer letters base
 *   **Security**: Requires EMPLOYEE or ADMIN role
 *   **Accept**: `text/html`
 *   **Response**: `String` (HTML content)
+
+## Letter Templates
+
+This section manages generic letter templates that can be used for various purposes like appointment letters, relaying policies, etc.
+
+### Create Letter Template (Admin Only)
+*   **Endpoint**: `POST /api/letters`
+*   **Description**: Creates a new letter template.
+*   **Security**: Requires ADMIN role
+*   **Request Body**: `LetterRequest`
+    ```json
+    {
+      "title": "string",
+      "description": "string",
+      "template": "string (HTML/Text content)"
+    }
+    ```
+*   **Response**: `LetterResponse`
+    ```json
+    {
+      "id": 1,
+      "title": "Appointment Letter",
+      "description": "Standard template for new hires",
+      "template": "<h1>Welcome</h1>..."
+    }
+    ```
+
+### Get All Letter Templates
+*   **Endpoint**: `GET /api/letters`
+*   **Description**: Retrieves all stored letter templates.
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Response**: List of `LetterResponse`
+
+### Get Letter Template By ID
+*   **Endpoint**: `GET /api/letters/{id}`
+*   **Description**: Retrieves a specific letter template by its ID.
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Response**: `LetterResponse`
+
+### Update Letter Template (Admin Only)
+*   **Endpoint**: `PUT /api/letters/{id}`
+*   **Description**: Updates an existing letter template.
+*   **Security**: Requires ADMIN role
+*   **Request Body**: `LetterRequest`
+*   **Response**: `LetterResponse`
+
+### Delete Letter Template (Admin Only)
+*   **Endpoint**: `DELETE /api/letters/{id}`
+*   **Description**: Deletes a letter template.
+*   **Security**: Requires ADMIN role
+*   **Response**: No Content (204)
 
 ---
 
