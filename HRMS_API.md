@@ -173,13 +173,17 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
       "district": "string (optional)",
       "state": "string (optional)",
       "pincode": "string (optional)",
-      "expCompanyName": "string (optional)",
-      "expJobTitle": "string (optional)",
-      "expEmploymentType": "string (optional)",
-      "expLocation": "string (optional)",
-      "expStartDate": "YYYY-MM-DD (optional)",
-      "expEndDate": "YYYY-MM-DD (optional)",
-      "expDescription": "string (optional)"
+      "experiences": [
+        {
+          "companyName": "string",
+          "jobTitle": "string",
+          "employmentType": "string",
+          "location": "string",
+          "startDate": "YYYY-MM-DD",
+          "endDate": "YYYY-MM-DD (optional)",
+          "description": "string (optional)"
+        }
+      ]
     }
     ```
 *   **Real Example**:
@@ -238,13 +242,17 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
       "sslcCertificate": "certificates/uuid_sslc.pdf",
       "hscCertificate": "certificates/uuid_hsc.pdf",
       "experienceCertificates": "experience/uuid_exp.pdf",
-      "expCompanyName": "Previous Corp",
-      "expJobTitle": "Junior Developer",
-      "expEmploymentType": "Full-time",
-      "expLocation": "Remote",
-      "expStartDate": "2022-01-01",
-      "expEndDate": "2023-12-31",
-      "expDescription": "Worked on various projects."
+      "experiences": [
+        {
+          "companyName": "Previous Corp",
+          "jobTitle": "Junior Developer",
+          "employmentType": "Full-time",
+          "location": "Remote",
+          "startDate": "2022-01-01",
+          "endDate": "2023-12-31",
+          "description": "Worked on various projects."
+        }
+      ]
     }
     ```
 *   **Response**: `EmployeeResponse`
@@ -269,13 +277,17 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
       "aadharNumber": "string (12 digits)",
       "salary": "double",
       "status": "WORKING | RESIGNED | TERMINATED | ON_LEAVE | SUSPENDED",
-      "expCompanyName": "string",
-      "expJobTitle": "string",
-      "expEmploymentType": "string",
-      "expLocation": "string",
-      "expStartDate": "YYYY-MM-DD",
-      "expEndDate": "YYYY-MM-DD",
-      "expDescription": "string",
+      "experiences": [
+        {
+          "companyName": "string",
+          "jobTitle": "string",
+          "employmentType": "string",
+          "location": "string",
+          "startDate": "YYYY-MM-DD",
+          "endDate": "YYYY-MM-DD (optional)",
+          "description": "string"
+        }
+      ],
       "leavedAt": "ISO-8601 string (YYYY-MM-DD) or null",
       "dateOfJoining": "ISO-8601 string (YYYY-MM-DD)",
       "noticePeriod": "string",
