@@ -13,9 +13,8 @@ This document provides a comprehensive list of all API endpoints in the Human Re
 8. [Compensatory Off](#compensatory-off)
 9. [Company Management](#company-management)
 10. [Company Holidays](#company-holidays)
-11. [Offer Letter](#offer-letter)
-12. [Letter Templates](#letter-templates)
-13. [Error Handling](#error-handling)
+11. [Letter Templates](#letter-templates)
+12. [Error Handling](#error-handling)
 
 ---
 
@@ -752,6 +751,9 @@ To use comp off credits, employees apply for leave with type "Compensatory Off" 
     {
       "companyName": "string",
       "address": "string",
+      "phone": "string",
+      "email": "string",
+      "website": "string",
       "companyCode": "string"
     }
     ```
@@ -761,6 +763,9 @@ To use comp off credits, employees apply for leave with type "Compensatory Off" 
       "id": "UUID",
       "companyName": "string",
       "address": "string",
+      "phone": "string",
+      "email": "string",
+      "website": "string",
       "companyCode": "string"
     }
     ```
@@ -878,54 +883,7 @@ To use comp off credits, employees apply for leave with type "Compensatory Off" 
 
 ---
 
-## Offer Letter
-
-This section provides APIs for retrieving data and generating offer letters based on HTML templates.
-
-### Get Offer Letter Data (Admin Only)
-*   **Endpoint**: `GET /api/offer-letter/data/{employeeId}`
-*   **Description**: Retrieves pre-populated data for an employee's offer letter.
-*   **Security**: Requires ADMIN role
-*   **Response**: `OfferLetterRequest`
-    ```json
-    {
-      "employeeName": "string",
-      "email": "string",
-      "designation": "string",
-      "salary": "double",
-      "joiningDate": "YYYY-MM-DD",
-      "companyName": "string",
-      "companyAddress": "string",
-      "street": "string",
-      "area": "string",
-      "city": "string",
-      "state": "string",
-      "pincode": "string",
-      "officeLocation": "string"
-    }
-    ```
-
-### Get My Offer Letter Data
-*   **Endpoint**: `GET /api/offer-letter/my-data`
-*   **Description**: Retrieves offer letter data for the currently logged-in employee.
-*   **Security**: Requires EMPLOYEE or ADMIN role
-*   **Response**: `OfferLetterRequest`
-
-### Generate Offer Letter HTML (Admin Only)
-*   **Endpoint**: `POST /api/offer-letter/generate`
-*   **Description**: Generates the HTML content of an offer letter from the provided request data.
-*   **Security**: Requires ADMIN role
-*   **Content-Type**: `application/json`
-*   **Accept**: `text/html`
-*   **Request Body**: `OfferLetterRequest`
-*   **Response**: `String` (HTML content)
-
-### Get My Offer Letter HTML
-*   **Endpoint**: `GET /api/offer-letter/my-offer-letter`
-*   **Description**: Retrieves the generated HTML offer letter for the currently logged-in employee.
-*   **Security**: Requires EMPLOYEE or ADMIN role
-*   **Accept**: `text/html`
-*   **Response**: `String` (HTML content)
+---
 
 ## Letter Templates
 
@@ -977,6 +935,21 @@ This section manages generic letter templates that can be used for various purpo
 *   **Description**: Deletes a letter template.
 *   **Security**: Requires ADMIN role
 *   **Response**: No Content (204)
+
+### Generate Letter (Admin Only)
+*   **Endpoint**: `POST /api/letters/generate`
+*   **Description**: Generates a letter by fetching an employee by email and a template by title, then replacing placeholders.
+*   **Security**: Requires ADMIN role
+*   **Content-Type**: `application/json`
+*   **Accept**: `text/html`
+*   **Request Body**: `LetterGenerationRequest`
+    ```json
+    {
+      "email": "employee@example.com",
+      "title": "Offer Letter"
+    }
+    ```
+*   **Response**: `String` (HTML content with replaced placeholders)
 
 ---
 
