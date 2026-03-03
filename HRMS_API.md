@@ -951,6 +951,33 @@ This section manages generic letter templates that can be used for various purpo
     ```
 *   **Response**: `String` (HTML content with replaced placeholders)
 
+### Supported Template Placeholders
+The following keys can be used in your HTML templates within double curly braces (e.g., `{{employee_name}}`):
+
+#### Employee Infomation
+*   `{{employee_name}}`: Full name of the employee
+*   `{{emp_id}}`: Employee ID
+*   `{{email}}`: Employee's email
+*   `{{designation}}`: Job Title
+*   `{{joining_date}}`: Date of Joining
+*   `{{leaving_date}}`: Date of Relieving
+*   `{{notice_period}}`: Notice Duration
+*   `{{date}}`: Current generation date
+
+#### Address Details
+*   `{{street}}`, `{{area}}`, `{{city}}`, `{{district}}`, `{{state}}`, `{{pincode}}`
+
+#### Salary & Terms
+*   `{{salary}}`: Monthly Gross Salary
+*   `{{annual_ctc}}`: Annual package
+*   `{{probation_period}}`: Probation duration (3 Months)
+
+#### Company & Management
+*   `{{company_name}}`, `{{company_address}}`, `{{company_phone}}`, `{{company_email}}`, `{{company_website}}`, `{{work_location}}`, `{{company_logo}}`
+*   `{{manager_name}}`: Reporting Manager's Name
+*   `{{hr_name}}`: Signatory Name
+*   `{{hr_designation}}`: Signatory Title
+
 ---
 
 ## Error Handling
