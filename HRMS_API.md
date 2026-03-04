@@ -14,7 +14,8 @@ This document provides a comprehensive list of all API endpoints in the Human Re
 9. [Company Management](#company-management)
 10. [Company Holidays](#company-holidays)
 11. [Letter Templates](#letter-templates)
-12. [Error Handling](#error-handling)
+12. [Generated Employee Letters](#generated-employee-letters)
+13. [Error Handling](#error-handling)
 
 ---
 
@@ -938,7 +939,7 @@ This section manages generic letter templates that can be used for various purpo
 
 ### Generate Letter (Admin Only)
 *   **Endpoint**: `POST /api/letters/generate`
-*   **Description**: Generates a letter by fetching an employee by email and a template by title, then replacing placeholders.
+*   **Description**: Generates a letter by fetching an employee by email and a template by title, then replacing placeholders. **Note**: The generated letter is automatically saved to the employee's letter history.
 *   **Security**: Requires ADMIN role
 *   **Content-Type**: `application/json`
 *   **Accept**: `text/html`
@@ -950,6 +951,34 @@ This section manages generic letter templates that can be used for various purpo
     }
     ```
 *   **Response**: `String` (HTML content with replaced placeholders)
+
+---
+
+## Generated Employee Letters
+
+This section manages the letters that have been generated and issued to employees.
+
+### Get My Generated Letters
+*   **Endpoint**: `GET /api/letters/my-letters`
+*   **Description**: Retrieves all letters generated for the currently logged-in employee.
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Response**: List of `EmployeeLetterResponse`
+    ```json
+    [
+      {
+        "id": 1,
+        "title": "Offer Letter",
+        "content": "<h1>Offer Letter</h1>...",
+        "generatedAt": "2024-03-04T12:00:00"
+      }
+    ]
+    ```
+
+### Get Employee Letters (Admin Only)
+*   **Endpoint**: `GET /api/letters/employee/{email}`
+*   **Description**: Retrieves all letters generated for a specific employee by their email.
+*   **Security**: Requires ADMIN role
+*   **Response**: List of `EmployeeLetterResponse`
 
 ### Supported Template Placeholders
 The following keys can be used in your HTML templates within double curly braces (e.g., `{{employee_name}}`):
