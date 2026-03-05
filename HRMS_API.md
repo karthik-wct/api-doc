@@ -12,10 +12,12 @@ This document provides a comprehensive list of all API endpoints in the Human Re
 7. [Leave Management](#leave-management)
 8. [Compensatory Off](#compensatory-off)
 9. [Company Management](#company-management)
-10. [Company Holidays](#company-holidays)
-11. [Letter Templates](#letter-templates)
-12. [Generated Employee Letters](#generated-employee-letters)
-13. [Error Handling](#error-handling)
+10. [Team Management](#team-management-admin-only)
+11. [Company Holidays](#company-holidays)
+12. [Letter Templates](#letter-templates)
+13. [Generated Employee Letters](#generated-employee-letters)
+14. [Document Requests](#document-requests)
+15. [Error Handling](#error-handling)
 
 ---
 
@@ -238,6 +240,8 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
       "dateOfJoining": "2024-01-01",
       "resume": "resumes/uuid_resume.pdf",
       "employeeImage": "images/uuid_photo.jpg",
+      "provisionalCertificate": "certificates/uuid_provisional.pdf",
+      "degreeCertificate": "certificates/uuid_degree.pdf",
       "aadharCard": "aadhar/uuid_aadhar.pdf",
       "panCard": "pan/uuid_pan.pdf",
       "sslcCertificate": "certificates/uuid_sslc.pdf",
@@ -301,7 +305,16 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
       "city": "string",
       "district": "string",
       "state": "string",
-      "pincode": "string"
+      "pincode": "string",
+      "resume": "string (path)",
+      "employeeImage": "string (path)",
+      "provisionalCertificate": "string (path)",
+      "degreeCertificate": "string (path)",
+      "aadharCard": "string (path)",
+      "panCard": "string (path)",
+      "sslcCertificate": "string (path)",
+      "hscCertificate": "string (path)",
+      "experienceCertificates": "string (path)"
     }
     ```
 
@@ -469,6 +482,17 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
 *   **Security**: Requires ADMIN role
 *   **Response**: List of `WorkPeriodResponse`
 
+### Update Work Period (Admin Only)
+*   **Endpoint**: `PUT /api/work-periods/{id}`
+*   **Security**: Requires ADMIN role
+*   **Request Body**: `WorkPeriodRequest`
+*   **Response**: `WorkPeriodResponse`
+
+### Delete Work Period (Admin Only)
+*   **Endpoint**: `DELETE /api/work-periods/{id}`
+*   **Security**: Requires ADMIN role
+*   **Response**: No Content (204)
+
 ---
 
 ## Permission Management
@@ -486,6 +510,12 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
     }
     ```
 *   **Response**: `PermissionRequestResponse`
+
+### Get My Permissions
+*   **Endpoint**: `GET /api/permissions/my`
+*   **Description**: Retrieves all permission requests submitted by the current user.
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Response**: List of `PermissionRequestResponse`
 
 ### Get Pending Permissions (Admin Only)
 *   **Endpoint**: `GET /api/permissions/pending`
@@ -573,6 +603,12 @@ The token is a standard JWT consisting of three parts separated by dots: `Header
     curl -X GET http://localhost:8080/api/leave/my-leaves \
          -H "Authorization: Bearer <your_token>"
     ```
+*   **Response**: List of `LeaveRequestResponse`
+
+### Get All Leave Requests (Admin Only)
+*   **Endpoint**: `GET /api/leave/all`
+*   **Description**: Retrieves all leave requests from all employees.
+*   **Security**: Requires ADMIN role
 *   **Response**: List of `LeaveRequestResponse`
 
 ### Update Leave Request (Pending Only)
@@ -794,6 +830,29 @@ To use comp off credits, employees apply for leave with type "Compensatory Off" 
 
 ---
 
+## Team Management (Admin Only)
+
+### Create Team
+*   **Endpoint**: `POST /api/teams`
+*   **Security**: Requires ADMIN role
+*   **Request Body**: `TeamRequest`
+    ```json
+    {
+      "name": "string",
+      "pmId": "long (Employee ID for Project Manager, Optional)",
+      "tlId": "long (Employee ID for Team Lead, Optional)",
+      "companyId": "UUID"
+    }
+    ```
+*   **Response**: `Team` (Entity)
+
+### Get Teams by Company
+*   **Endpoint**: `GET /api/teams/company/{companyId}`
+*   **Security**: Requires ADMIN role
+*   **Response**: List of `Team`
+
+---
+
 ## Company Holidays
 
 ### Get Holiday Types
@@ -939,7 +998,7 @@ This section manages generic letter templates that can be used for various purpo
 
 ### Generate Letter (Admin Only)
 *   **Endpoint**: `POST /api/letters/generate`
-*   **Description**: Generates a letter by fetching an employee by email and a template by title, then replacing placeholders. **Note**: The generated letter is automatically saved to the employee's letter history.
+*   **Description**: Generates a letter by fetching an employee by email and a template by title, then replacing placeholders. **Note**: The generated letter is automatically saved to the employee's letter history. **Duplicate letters with the same title for the same employee are not allowed.**
 *   **Security**: Requires ADMIN role
 *   **Content-Type**: `application/json`
 *   **Accept**: `text/html`
@@ -975,8 +1034,8 @@ This section manages the letters that have been generated and issued to employee
     ```
 
 ### Get Employee Letters (Admin Only)
-*   **Endpoint**: `GET /api/letters/employee/{email}`
-*   **Description**: Retrieves all letters generated for a specific employee by their email.
+*   **Endpoint**: `GET /api/letters/employee/{id}`
+*   **Description**: Retrieves all letters generated for a specific employee by their database ID.
 *   **Security**: Requires ADMIN role
 *   **Response**: List of `EmployeeLetterResponse`
 
@@ -1006,6 +1065,51 @@ The following keys can be used in your HTML templates within double curly braces
 *   `{{manager_name}}`: Reporting Manager's Name
 *   `{{hr_name}}`: Signatory Name
 *   `{{hr_designation}}`: Signatory Title
+
+---
+
+## Document Requests
+
+This section allows employees to request documents (like offer letters, experience letters) and admins to manage those requests.
+
+### Submit Document Request
+*   **Endpoint**: `POST /api/document-requests/submit`
+*   **Description**: Employee submits a request for a specific document.
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Request Body**: `DocumentRequestSubmission`
+    ```json
+    {
+      "documentTitle": "Offer Letter",
+      "requiredBy": "2026-03-10",
+      "purpose": "Bank Loan Application"
+    }
+    ```
+*   **Response**: `DocumentRequestResponse`
+
+### Get My Document Requests
+*   **Endpoint**: `GET /api/document-requests/my`
+*   **Description**: Retrieves all document requests submitted by the current user.
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Response**: List of `DocumentRequestResponse`
+
+### Get All Document Requests (Admin Only)
+*   **Endpoint**: `GET /api/document-requests/all`
+*   **Description**: Retrieves all document requests from all employees.
+*   **Security**: Requires ADMIN role
+*   **Response**: List of `DocumentRequestResponse`
+
+### Handle Document Request Action (Admin Only)
+*   **Endpoint**: `PUT /api/document-requests/{id}/action`
+*   **Description**: Admin approves or rejects a document request.
+*   **Security**: Requires ADMIN role
+*   **Request Body**: `DocumentRequestAction`
+    ```json
+    {
+      "status": "APPROVED | REJECTED",
+      "adminRemarks": "Processed and sent to email"
+    }
+    ```
+*   **Response**: `DocumentRequestResponse`
 
 ---
 
