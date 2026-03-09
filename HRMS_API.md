@@ -3501,7 +3501,7 @@ This section allows employees to request documents (like offer letters, experien
 
 #### Get Payroll Processing List
 *   **Endpoint**: `GET /api/payroll/processing`
-*   **Description**: Retrieves all processed payroll records for a specific period.
+*   **Description**: Retrieves a comprehensive list of all employees for a given month/year. If a payroll is already generated, it returns the saved details. If not, it returns a preview of the calculation with status `PENDING`.
 *   **Parameters**: `month`, `year`
 *   **Response**: List of `PayrollResponse`
 
