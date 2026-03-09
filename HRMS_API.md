@@ -3451,6 +3451,13 @@ This section allows employees to request documents (like offer letters, experien
 *   **Security**: Requires ADMIN role
 *   **Response**: List of `SalaryStructureResponse`
 
+#### Update Salary Structure
+*   **Endpoint**: `PUT /api/salary-structures/{id}`
+*   **Security**: Requires ADMIN role
+*   **Description**: Updates an existing salary structure and its components.
+*   **Request Body**: `SalaryStructureRequest`
+*   **Response**: `SalaryStructureResponse`
+
 ---
 
 ### Payroll Processing
