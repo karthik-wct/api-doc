@@ -1073,6 +1073,23 @@ The following keys can be used in your HTML templates within double curly braces
 *   `{{hr_name}}`: Signatory Name
 *   `{{hr_designation}}`: Signatory Title
 
+#### Payslip Specific (Only available for Payslip generation)
+*   `{{pay_month}}`, `{{pay_year}}`, `{{pay_period}}`: Month/Year/Period of payroll
+*   `{{total_days}}`: Total days in month
+*   `{{days_present}}`: Days employee was present
+*   `{{lop_days}}`: Number of unpaid (LOP) days
+*   `{{annual_ctc}}`: Annual package
+*   `{{monthly_ctc}}`: Base monthly payment
+*   `{{salary}}`: Monthly payment (Legacy key)
+*   `{{per_day_rate}}`: Rate per day
+*   `{{lop_amount}}`: Deduction amount for LOP
+*   `{{gross_salary}}`: Total earnings
+*   `{{total_deductions}}`: Total deductions (including LOP)
+*   `{{net_salary}}`: Take-home salary
+*   `{{earnings_rows}}`: HTML Table rows for earning components
+*   `{{deductions_rows}}`: HTML Table rows for deduction components
+*   `{{generated_date}}`: Date when payslip was generated
+
 ---
 
 ## Document Requests
@@ -1261,23 +1278,35 @@ When multiple fields fail validation, the messages are concentrated into a singl
       "empId": "EMP001",
       "employeeName": "John Doe",
       "designation": "Software Engineer",
-      "workingDays": 26,
-      "daysWorked": 26,
-      "lopDays": 0,
-      "grossSalary": 95000.0,
-      "totalDeductions": 10223.0,
-      "netSalary": 84777.0,
+      "salaryStructureName": "Standard Structure",
+      "month": 3,
+      "year": 2026,
+      "totalDaysInMonth": 31,
+      "daysPresent": 29,
+      "lopDays": 2,
+      "annualCtc": 1200000.0,
+      "monthlyCtc": 100000.0,
+      "perDayRate": 3225.81,
+      "lopAmount": 6451.61,
+      "grossSalary": 100000.0,
+      "totalDeductions": 16451.61,
+      "netSalary": 83548.39,
       "status": "GENERATED",
       "componentValues": [
         {
           "name": "Basic Salary",
           "type": "EARNING",
-          "value": 38000.0
+          "value": 40000.0
         },
         {
-          "name": "House Rent Allowance",
+          "name": "Special Allowance",
           "type": "EARNING",
-          "value": 15200.0
+          "value": 60000.0
+        },
+        {
+          "name": "Provident Fund",
+          "type": "DEDUCTION",
+          "value": 4800.0
         }
       ]
     }
@@ -1308,6 +1337,11 @@ When multiple fields fail validation, the messages are concentrated into a singl
 *   **Description**: Updates the status of a payroll record (e.g., to `PAID`).
 *   **Parameters**: `status` (PENDING | GENERATED | PAID)
 *   **Response**: `PayrollResponse`
+    
+#### Get Payslip (HTML)
+*   **Endpoint**: `GET /api/payroll/payslip/{payrollId}`
+*   **Description**: Returns an HTML payslip for a given payroll record ID. This uses the `{{placeholder}}` replacement strategy on a template. **Note**: A template with the title "Payslip" must be created in the Letter repository for this endpoint to work.
+*   **Response**: `String` (HTML content)
 
 #### Get Payroll Summary
 *   **Endpoint**: `GET /api/payroll/summary`
@@ -1355,6 +1389,5 @@ When multiple fields fail validation, the messages are concentrated into a singl
   "message": "Employee not found"
 }
 ```
-
 
 
