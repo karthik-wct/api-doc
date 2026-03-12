@@ -73,7 +73,9 @@ The initial admin credentials can be configured using environment variables. If 
       "id": 1,
       "email": "admin@whitecrowtechnologies.com",
       "name": "Admin",
-      "roles": ["ROLE_ADMIN"]
+      "roles": ["ROLE_ADMIN"],
+      "isCheckedIn": true,
+      "todayWorkingHours": 4.5
     }
     ```
 *   **Notes**: Only employees with `status: "WORKING"` can log in. accounts with `RESIGNED` or `TERMINATED` status are disabled.
@@ -1263,11 +1265,12 @@ When multiple fields fail validation, the messages are concentrated into a singl
 
 ### Payroll Processing
 
-#### Generate Monthly Payroll
-*   **Endpoint**: `POST /api/payroll/generate/{empId}`
+All payroll calculations are automatically stored in the database. The system calculates **Working Days** by subtracting company holidays from total calendar days, and **Worked Days** by subtracting "ABSENT" records from working days.
+
+#### Generate Monthly Payroll (Admin)
+*   **Endpoint**: `POST /api/payroll/admin/generate/{empId}`
 *   **Security**: Requires ADMIN role
-*   **Description**: Calculates and generates the payroll for an employee for a specific month/year based on their CTC and the company's assigned salary structure. 
-*   **Note**: Salary is prorated based on working days (Mon-Sat) versus actual attendance.
+*   **Description**: Calculates and stores the payroll for a single employee. If a record already exists for the given period, it is updated.
 *   **Parameters**:
     - `month` (Integer): 1-12
     - `year` (Integer)
@@ -1281,74 +1284,45 @@ When multiple fields fail validation, the messages are concentrated into a singl
       "salaryStructureName": "Standard Structure",
       "month": 3,
       "year": 2026,
-      "totalDaysInMonth": 31,
-      "daysPresent": 29,
-      "lopDays": 2,
+      "totalDaysInMonth": 26,
+      "daysPresent": 25,
+      "lopDays": 1,
       "annualCtc": 1200000.0,
       "monthlyCtc": 100000.0,
-      "perDayRate": 3225.81,
-      "lopAmount": 6451.61,
+      "perDayRate": 3846.15,
+      "lopAmount": 3846.15,
       "grossSalary": 100000.0,
-      "totalDeductions": 16451.61,
-      "netSalary": 83548.39,
-      "status": "GENERATED",
+      "totalDeductions": 13846.15,
+      "netSalary": 86153.85,
       "componentValues": [
         {
           "name": "Basic Salary",
           "type": "EARNING",
           "value": 40000.0
-        },
-        {
-          "name": "Special Allowance",
-          "type": "EARNING",
-          "value": 60000.0
-        },
-        {
-          "name": "Provident Fund",
-          "type": "DEDUCTION",
-          "value": 4800.0
         }
       ]
     }
     ```
 
-#### Get Payroll Processing List
-*   **Endpoint**: `GET /api/payroll/processing`
-*   **Description**: Retrieves a comprehensive list of all employees for a given month/year. If a payroll is already generated, it returns the saved details. If not, it returns a preview of the calculation with status `PENDING`.
+#### Get All Stored Payrolls (Admin)
+*   **Endpoint**: `GET /api/payroll/admin/all`
+*   **Security**: Requires ADMIN role
+*   **Description**: Retrieves all payroll records stored in the database for a specific month and year.
 *   **Parameters**: `month`, `year`
 *   **Response**: List of `PayrollResponse`
 
-#### Generate All Payrolls
-*   **Endpoint**: `POST /api/payroll/generate-all`
+#### Generate All Payrolls (Admin)
+*   **Endpoint**: `POST /api/payroll/admin/generate-all`
 *   **Security**: Requires ADMIN role
-*   **Description**: Triggers payroll generation for all active employees for the given month/year.
+*   **Description**: Triggers payroll generation for all active employees for the given month/year. Results are stored in the database.
 *   **Parameters**: `month`, `year`
-*   **Response**: success message
-
-#### Get My Payrolls
-*   **Endpoint**: `GET /api/payroll/my`
-*   **Security**: Requires Authentication (Bearer Token)
-*   **Description**: Retrieves the salary history for the logged-in employee.
 *   **Response**: List of `PayrollResponse`
 
-#### Update Payroll Status
-*   **Endpoint**: `PATCH /api/payroll/{id}/status`
+#### Get Payroll Summary (Admin)
+*   **Endpoint**: `GET /api/payroll/admin/summary`
 *   **Security**: Requires ADMIN role
-*   **Description**: Updates the status of a payroll record (e.g., to `PAID`).
-*   **Parameters**: `status` (PENDING | GENERATED | PAID)
-*   **Response**: `PayrollResponse`
-    
-#### Get Payslip (HTML)
-*   **Endpoint**: `GET /api/payroll/payslip/{payrollId}`
-*   **Description**: Returns an HTML payslip for a given payroll record ID. This uses the `{{placeholder}}` replacement strategy on a template. **Note**: A template with the title "Payslip" must be created in the Letter repository for this endpoint to work.
-*   **Response**: `String` (HTML content)
-
-#### Get Payroll Summary
-*   **Endpoint**: `GET /api/payroll/summary`
 *   **Description**: Retrieves organizational metrics for payroll for a specific month.
-*   **Parameters**: 
-    - `month` (Integer)
-    - `year` (Integer)
+*   **Parameters**: `month`, `year`
 *   **Response**: `PayrollSummaryResponse`
     ```json
     {
@@ -1361,11 +1335,27 @@ When multiple fields fail validation, the messages are concentrated into a singl
     }
     ```
 
+#### Get Admin Payslip HTML (Admin)
+*   **Endpoint**: `GET /api/payroll/admin/payslip/{payrollId}`
+*   **Security**: Requires ADMIN role
+*   **Description**: Returns an HTML payslip for any payroll record.
+*   **Response**: `String` (HTML content)
+
+#### Get My Payroll History (Employee)
+*   **Endpoint**: `GET /api/payroll/my`
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Description**: Retrieves all historical payroll records for the logged-in employee from the database.
+*   **Response**: List of `PayrollResponse`
+
+#### Get My Payslip HTML (Employee)
+*   **Endpoint**: `GET /api/payroll/my/payslip/{payrollId}`
+*   **Security**: Requires Authentication (Bearer Token)
+*   **Description**: Returns an HTML payslip for the employee's own payroll record.
+*   **Response**: `String` (HTML content)
+
 ---
 
 ## Error Handling
-
-All API errors return a consistent JSON structure to simplify client-side handling.
 
 ### Error Response Format
 *   **Response Body**: `ErrorResponse`
